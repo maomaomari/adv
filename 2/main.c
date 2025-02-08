@@ -70,8 +70,14 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
+typedef struct line_s{
+	int* array;
+	size_t arr_size;
+}line_t;
+
 int f_linenum(char*);
 size_t ret_digitnum(char *);
+void fetch_to_arr(int *array, char *string, size_t arr_size);
 
 int main(int argc, char** argv){
 	assert(argv[1] != NULL);
@@ -81,12 +87,12 @@ int main(int argc, char** argv){
 	int** report = (int**)malloc(sizeof(int*)*linenum);
 	char buff[512];
 	for(int i = 0; i < linenum; i++ ){
-		report[i] = (int*) malloc(sizeof(int) * (ret_digitnum(fgets(buff, 512, file))));
-		printf("%s",buff);
+		size_t arrsize = ret_digitnum(fgets(buff,512,file));
+		report[i] = (int*) malloc(sizeof(int) * arrsize);
+		fetch_to_arr(report[i], buff, arrsize);
 	}
-
-	printf("%ld",ret_digitnum("1 12 2 4 5 323"));
-	
+	for(int i = 0; i < linenum; i++)
+		printf("arr: %d\n", report[i][0]);
 	return 0;
 }
 
@@ -110,5 +116,17 @@ size_t ret_digitnum(char* string){
 		}
 	}
 		
-	return num; 
+	return num;
+}
+/*
+  fetches ints from string to an array of size 'size
+ */
+void fetch_to_arr(int* array, char* string, size_t size){
+	assert(size);
+	for(int i = 0; i < size; i++){
+		char buff[64];
+		for(int j = 0; isdigit(string[j]); j++)
+			buff[j] = string[j];
+		array[i] = atoi(buff);
+	}
 }
