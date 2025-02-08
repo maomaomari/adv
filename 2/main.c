@@ -65,11 +65,13 @@ ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
 SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 */
 #include <assert.h>
+#include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
 int f_linenum(char*);
+size_t ret_digitnum(char *);
 
 int main(int argc, char** argv){
 	assert(argv[1] != NULL);
@@ -79,9 +81,12 @@ int main(int argc, char** argv){
 	int** report = (int**)malloc(sizeof(int*)*linenum);
 	char buff[512];
 	for(int i = 0; i < linenum; i++ ){
-		report[i] = (int*) malloc(sizeof(int) * (strlen(fgets(buff, 512, file)) / 2) + 1);
+		report[i] = (int*) malloc(sizeof(int) * (ret_digitnum(fgets(buff, 512, file))));
 		printf("%s",buff);
 	}
+
+	printf("%ld",ret_digitnum("1 12 2 4 5 323"));
+	
 	return 0;
 }
 
@@ -94,4 +99,16 @@ int f_linenum(char *filename){
 		linenum++;
 	fclose(file);
 	return linenum;
+}
+size_t ret_digitnum(char* string){
+	size_t num = 0;
+	for(int i = 0; string[i] != '\0'; i++){
+		if(isdigit(string[i])){
+			num++;
+			while(isdigit(string[i]))
+				i++;
+		}
+	}
+		
+	return num; 
 }
