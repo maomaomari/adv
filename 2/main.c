@@ -70,6 +70,7 @@ SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
 #include <stdlib.h>
 #include <string.h>
 
+
 typedef struct line_s{
 	int* array;
 	size_t arr_size;
@@ -78,24 +79,36 @@ typedef struct line_s{
 int f_linenum(char*);
 size_t ret_digitnum(char *);
 void fetch_to_arr(int *array, char *string, size_t arr_size);
+bool eval_array(int*);
+void print_array(line_t);
 
 int main(int argc, char** argv){
 	assert(argv[1] != NULL);
 	int linenum = f_linenum(argv[1]);
 	FILE *file = fopen(argv[1], "r");
 
-	int** report = (int**)malloc(sizeof(int*)*linenum);
+	//	int** report = (int**)malloc(sizeof(int*)*linenum);
+	line_t *report = (line_t*) malloc(sizeof(line_t) * linenum);
 	char buff[512];
 	for(int i = 0; i < linenum; i++ ){
 		size_t arrsize = ret_digitnum(fgets(buff,512,file));
-		report[i] = (int*) malloc(sizeof(int) * arrsize);
-		fetch_to_arr(report[i], buff, arrsize);
+		//		report[i] = (int*) malloc(sizeof(int) * arrsize);
+		//		fetch_to_arr(report[i], buff, arrsize);
+		report[i].arr_size = arrsize;
+		report[i].array = malloc(sizeof(int) * arrsize);
+		fetch_to_arr(report[i].array, buff, report[i].arr_size);
 	}
-	for(int i = 0; i < linenum; i++)
-		printf("arr: %d\n", report[i][0]);
+	for(int i = 0; i < linenum; i++){
+		printf("array : ");
+		for(int j = 0; j < report[i].arr_size; j++)
+			printf("%d ", (report[i].array[j]));
+	printf("\n");
+	}
 	return 0;
 }
-
+/*
+  returns number of lines on a file
+ */
 int f_linenum(char *filename){
 	FILE *file = fopen(filename, "r");
 	char buf[256];
@@ -106,6 +119,10 @@ int f_linenum(char *filename){
 	fclose(file);
 	return linenum;
 }
+
+/*
+  returns number of ints on an string
+ */
 size_t ret_digitnum(char* string){
 	size_t num = 0;
 	for(int i = 0; string[i] != '\0'; i++){
@@ -119,14 +136,16 @@ size_t ret_digitnum(char* string){
 	return num;
 }
 /*
-  fetches ints from string to an array of size 'size
+  fetches ints from string to an array of size 'size'
  */
 void fetch_to_arr(int* array, char* string, size_t size){
 	assert(size);
+	int t = 0;
 	for(int i = 0; i < size; i++){
 		char buff[64];
-		for(int j = 0; isdigit(string[j]); j++)
-			buff[j] = string[j];
+		for(int j = 0; isdigit(string[j]); j++, t++)
+			buff[j] = string[t];
+		t++;
 		array[i] = atoi(buff);
 	}
 }
