@@ -86,7 +86,7 @@ int f_linenum(char*);
 size_t ret_digitnum(char *);
 void fetch_to_arr(int *array, char *string, size_t arr_size);
 int eval_array(line_t);
-void print_array(line_t*, size_t);
+size_t print_array(line_t*, size_t);
 
 int main(int argc, char** argv){
 	assert(argv[1] != NULL);
@@ -104,7 +104,7 @@ int main(int argc, char** argv){
 		report[i].array = malloc(sizeof(int) * arrsize);
 		fetch_to_arr(report[i].array, buff, report[i].arr_size);
 	}
-	print_array(report, linenum);
+	printf("TOTAL: %ld",print_array(report, linenum));
 	return 0;
 }
 /*
@@ -175,12 +175,19 @@ int eval_array(line_t arr){
 	}
 	return result;
 }
-void print_array(line_t* arr_ptr, size_t size){
+size_t print_array(line_t* arr_ptr, size_t size){
+	size_t total =0;
 	for(int i = 0; i < size; i++){
 		printf("array : ");
 		for(int j = 0; j < arr_ptr[i].arr_size; j++)
 			printf("%d ", (arr_ptr[i].array[j]));
-		
-		eval_array(arr_ptr[i]) ? printf("TRUE\n") : printf("FALSE\n");
+		int tmp = eval_array(arr_ptr[i]);
+		if(tmp){
+			printf("TRUE\n");
+			total++;
+		} else{
+			printf("FALSE\n");
+		}
 	}
+	return total;
 }
