@@ -76,11 +76,17 @@ typedef struct line_s{
 	size_t arr_size;
 }line_t;
 
+enum is_inc{
+	nil = 0,
+	inc = 1,
+	dec = 2,
+};
+
 int f_linenum(char*);
 size_t ret_digitnum(char *);
 void fetch_to_arr(int *array, char *string, size_t arr_size);
-bool eval_array(int*);
-void print_array(line_t);
+int eval_array(line_t);
+void print_array(line_t*, size_t);
 
 int main(int argc, char** argv){
 	assert(argv[1] != NULL);
@@ -98,12 +104,7 @@ int main(int argc, char** argv){
 		report[i].array = malloc(sizeof(int) * arrsize);
 		fetch_to_arr(report[i].array, buff, report[i].arr_size);
 	}
-	for(int i = 0; i < linenum; i++){
-		printf("array : ");
-		for(int j = 0; j < report[i].arr_size; j++)
-			printf("%d ", (report[i].array[j]));
-	printf("\n");
-	}
+	print_array(report, linenum);
 	return 0;
 }
 /*
@@ -147,5 +148,39 @@ void fetch_to_arr(int* array, char* string, size_t size){
 			buff[j] = string[t];
 		t++;
 		array[i] = atoi(buff);
+	}
+}
+
+int eval_array(line_t arr){
+	assert(arr.arr_size > 1);
+	const int result = (arr.array[0] < arr.array[1] && (arr.array[1] - arr.array[0] < 4)) ? inc : dec;
+
+	if(arr.arr_size  == 2) return result;
+
+	switch(result){
+		case inc:
+			for(int i = 1; i < arr.arr_size - 1 ; i++){
+				if(!(arr.array[i] < arr.array[i+1] && (arr.array[i+1] - arr.array[i] < 4)))
+					return nil;
+			}
+			break;
+		case dec:
+			for(int i = 1; i < arr.arr_size - 1 ; i++){
+				if(!(arr.array[i] > arr.array[i+1] && (arr.array[i] - arr.array[i+i] < 4)))
+					return nil;
+			}
+			break;
+		default:
+			break;
+	}
+	return result;
+}
+void print_array(line_t* arr_ptr, size_t size){
+	for(int i = 0; i < size; i++){
+		printf("array : ");
+		for(int j = 0; j < arr_ptr[i].arr_size; j++)
+			printf("%d ", (arr_ptr[i].array[j]));
+		
+		eval_array(arr_ptr[i]) ? printf("TRUE\n") : printf("FALSE\n");
 	}
 }
